@@ -8,36 +8,35 @@
     <meta name="keywords" content="Telegram bot, post creator, Markdown, media, inline buttons, Telegram API">
     <meta name="author" content="LikhonDocs">
     <meta property="og:title" content="Telegram Post Creator - Seamlessly Create Telegram Posts">
-    <meta property="og:description" content="Post stunning Markdown-based messages to Telegram channels.">
-    <meta property="og:image" content="https://your-image-url.png">
+    <meta property="og:description" content="Post stunning Markdown-based messages to Telegram channels with inline buttons.">
+    <meta property="og:image" content="https://likhondocs.github.io/telegram-post-creator/og-image.png">
     <meta property="og:url" content="https://likhondocs.github.io/telegram-post-creator/">
     <meta name="twitter:card" content="summary_large_image">
     <title>Telegram Post Creator</title>
 
     <!-- Google Tag Manager -->
     <script>
-        (function(w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-            f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-WD75TXPX');
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-WD75TXPX');
     </script>
     <!-- End Google Tag Manager -->
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
 
     <style>
         body {
-            background: linear-gradient(to right, #0072ff, #00c6ff);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
             color: white;
             font-family: 'Arial', sans-serif;
             margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
@@ -77,6 +76,7 @@
             font-size: 16px;
             cursor: pointer;
             margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
@@ -90,6 +90,7 @@
 
         .footer a {
             color: #00c6ff;
+            text-decoration: none;
         }
 
         .stats {
@@ -103,20 +104,53 @@
             padding: 10px;
             border-radius: 10px;
         }
+
+        .warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        #buttonContainer {
+            margin-top: 20px;
+        }
+
+        .inline-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .remove-button {
+            color: #ff4136;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .toggle-section {
+            cursor: pointer;
+            color: #00c6ff;
+        }
     </style>
 </head>
 
 <body>
 
     <!-- Google Tag Manager (noscript) -->
-    <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WD75TXPX" height="0" width="0"
-            style="display:none;visibility:hidden"></iframe>
-    </noscript>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WD75TXPX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <div class="container">
         <h2><i class="fas fa-paper-plane"></i> Telegram Post Creator</h2>
+
+        <div class="warning">
+            <strong>Warning:</strong> Make sure to add <a href="https://t.me/MarkdownPostCreatorBot" target="_blank">MarkdownPostCreatorBot</a> as an admin to your channel before using this tool!
+        </div>
 
         <input type="url" id="channelLink" class="form-control my-3" 
                placeholder="Enter channel link (e.g., https://t.me/username)" required>
@@ -127,11 +161,25 @@
             <p id="subscriberCount">Subscribers: Loading...</p>
         </div>
 
-        <label for="markdownContent" class="mt-3">Post Content (Markdown)</label>
+        <label for="markdownContent" class="mt-3">Post Content (Markdown) <span class="toggle-section" onclick="toggleVisibility('markdownContent')">(Show/Hide)</span></label>
         <textarea id="markdownContent" class="form-control"></textarea>
 
-        <label for="mediaUrl" class="mt-3">Media URL (Optional)</label>
+        <label for="mediaUrl" class="mt-3">Media URL (Optional) <span class="toggle-section" onclick="toggleVisibility('mediaUrl')">(Show/Hide)</span></label>
         <input type="url" id="mediaUrl" class="form-control" placeholder="https://example.com/image.jpg">
+
+        <div class="row mt-3">
+            <div class="col">
+                <input type="text" id="buttonText" class="form-control" placeholder="Button Text">
+            </div>
+            <div class="col">
+                <input type="url" id="buttonUrl" class="form-control" placeholder="Button URL">
+            </div>
+            <div class="col-auto">
+                <button onclick="addButton()" class="btn btn-secondary">Add Button</button>
+            </div>
+        </div>
+
+        <div id="buttonContainer"></div>
 
         <button onclick="submitPost()" class="btn btn-success w-100 mt-3">Post to Telegram</button>
 
@@ -152,8 +200,10 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
         let BOT_TOKEN = '';
+        let buttons = [];
 
         // Fetch the bot token securely from token.env
         fetch('./token.env')
@@ -174,11 +224,45 @@
                         document.getElementById('channelData').style.display = 'block';
                         document.getElementById('subscriberCount').textContent = 
                             `Subscribers: ${data.result.members_count || 'Unavailable'}`;
+                        showToast('Channel info fetched successfully!', 'success');
                     } else {
-                        alert('Failed to fetch channel info. Make sure the bot is an admin.');
+                        showToast('Failed to fetch channel info. Make sure the bot is an admin.', 'error');
                     }
                 })
-                .catch(error => alert('Error fetching channel data: ' + error));
+                .catch(error => showToast('Error fetching channel data: ' + error, 'error'));
+        }
+
+        function addButton() {
+            const text = document.getElementById('buttonText').value;
+            const url = document.getElementById('buttonUrl').value;
+            if (text && url) {
+                buttons.push({ text, url });
+                updateButtonDisplay();
+                document.getElementById('buttonText').value = '';
+                document.getElementById('buttonUrl').value = '';
+                showToast('Button added successfully!', 'success');
+            } else {
+                showToast('Please enter both button text and URL.', 'warning');
+            }
+        }
+
+        function updateButtonDisplay() {
+            const container = document.getElementById('buttonContainer');
+            container.innerHTML = buttons.map((button, index) => 
+                `<span class="inline-button">${button.text} 
+                <i class="fas fa-times remove-button" onclick="removeButton(${index})"></i></span>`
+            ).join('');
+        }
+
+        function removeButton(index) {
+            buttons.splice(index, 1);
+            updateButtonDisplay();
+            showToast('Button removed.', 'info');
+        }
+
+        function toggleVisibility(elementId) {
+            const element = document.getElementById(elementId);
+            element.style.display = element.style.display === 'none' ? 'block' : 'none';
         }
 
         function submitPost() {
@@ -193,9 +277,21 @@
                 parse_mode: 'Markdown'
             };
 
-            if (mediaUrl) payload.photo = mediaUrl;
+            if (mediaUrl) {
+                payload.photo = mediaUrl;
+                delete payload.text;
+                payload.caption = markdownContent;
+            }
 
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            if (buttons.length > 0) {
+                payload.reply_markup = JSON.stringify({
+                    inline_keyboard: [buttons.map(button => ({ text: button.text, url: button.url }))]
+                });
+            }
+
+            const endpoint = mediaUrl ? 'sendPhoto' : 'sendMessage';
+
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -203,19 +299,32 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        alert('Post sent successfully!');
+                        showToast('Post sent successfully!', 'success');
                         incrementPostCount();
                     } else {
-                        alert('Failed to send post: ' + data.description);
+                        showToast('Failed to send post: ' + data.description, 'error');
                     }
                 })
-                .catch(error => alert('Error: ' + error));
+                .catch(error => showToast('Error: ' + error, 'error'));
         }
 
         function incrementPostCount() {
             let postCount = parseInt(localStorage.getItem('postCount')) || 0;
             localStorage.setItem('postCount', ++postCount);
             document.getElementById('postCount').textContent = postCount;
+        }
+
+        function showToast(message, type) {
+            Toastify({
+                text: message,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: type === 'success' ? "#4CAF50" :
+                                 type === 'error' ? "#F44336" :
+                                 type === 'warning' ? "#FFC107" : "#2196F3",
+            }).showToast();
         }
 
         window.onload = function () {
