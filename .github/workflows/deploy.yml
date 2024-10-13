@@ -3,33 +3,29 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to the main branch
+      - main  # Run the workflow on pushes to the main branch
 
 permissions:
-  contents: write  # Required for GitHub Pages deployment
+  contents: write  # Required for publishing with GitHub Pages
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3  # Use the latest version compatible with Node 20
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3  # Ensure Node.js 20 compatibility
-        with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install
+      - name: Checkout repository
+        uses: actions/checkout@v3  # Use latest checkout action
 
       - name: Inject Bot Token
+        run: echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > token.env
+
+      - name: Configure Git
         run: |
-          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > token.env
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3.9.1  # Use latest compatible version
+        uses: peaceiris/actions-gh-pages@v3.9.1  # Deploy the static site
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./  # Deploy the root directory
